@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Movies</string>
+    <string name="actian_sottings">sitings</string>
+    <string name="movie_til">Movie title</string>
+    <string name="movie_detl">Movie Detailes</string>
+    <string name="user_rat">User rating </string>
+    <string name="relese">Release Date</string>
+    <string name="sorting_label">sorting</string>
+    <string name="sorting_key">sorting order</string>
+    <string name="sorting_Poupelr"> Poupeler Movies</string>
+    <string name="sorting_Reated">High Rat </string>
+</resources>

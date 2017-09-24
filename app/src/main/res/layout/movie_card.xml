@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:adjustViewBounds="true">
+    <android.support.v7.widget.CardView
+        android:id="@+id/movie_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/card_margin"
+        android:elevation="3dp"
+        card_view:cardCornerRadius="@dimen/Card_rudies"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/thumbnile_card"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/movi_cover"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="fitXY"/>
+            <TextView
+                android:id="@+id/title_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/thumbnile_card"
+                android:padding="@dimen/movi_tittel_padding"
+                android:textColor="@color/Movie_tittel"
+                android:textSize="@dimen/movi_tittel"
+
+                />
+            <TextView
+                android:id="@+id/user_rat_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_card"
+                android:padding="@dimen/movi_tittel_padding"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/movi_tittel"
+
+                />
+
+
+
+        </RelativeLayout>
+
+
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

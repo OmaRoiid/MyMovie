@@ -1,0 +1,18 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="Padding_layout">16dp</dimen>
+    <dimen name="movi_tittel_padding">10dp</dimen>
+    <dimen name="movi_tittel">15dp </dimen>
+    <dimen name="movi_cover"> 160dp</dimen>
+    <dimen name="Card_rudies">0dp </dimen>
+    <dimen name="card_margin">5dp </dimen>
+    <dimen name="detail_background"> 500dp</dimen>
+    <dimen name="Layout_margin_left">10dp</dimen>
+    <dimen name="layout_margin_top">3dp</dimen>
+    <dimen name="layout_margin_top2"> 10dp</dimen>
+
+
+
+</resources>

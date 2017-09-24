@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Basics Colors-->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <!--cardView Colors-->
+    <color name="ViewPage">#F1F5F8 </color>
+    <color name="Movie_tittel">#4c4c4c</color>
+    <color name="White"> #FFFF</color>
+
+</resources>
