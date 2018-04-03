@@ -72,14 +72,14 @@ itemView.setOnClickListener(new View.OnClickListener() {
         {
 
             Movie MovieDetailCliced= mMovieList.get(pos);
-            Intent MovieIntent = new Intent(mContext, DetailActivity.class);
+            Intent MovieIntent = new Intent(mContext, DetailActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            MovieIntent.putExtra("id",mMovieList.get(pos).getId());
             MovieIntent.putExtra("original_title",mMovieList.get(pos).getOriginal_title());
             MovieIntent.putExtra("poster_path",mMovieList.get(pos).getPosterPath());
             MovieIntent.putExtra("overview",mMovieList.get(pos).getOverview());
             MovieIntent.putExtra("vote_average",Double.toString(mMovieList.get(pos).getVote_average()));
-            MovieIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(MovieIntent);
-            Toast.makeText(v.getContext(),"Cliced on"+ MovieDetailCliced.getOriginal_title(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(v.getContext()," "+ MovieDetailCliced.getOriginal_title(),Toast.LENGTH_SHORT).show();
         }
     }
 });

@@ -1,10 +1,13 @@
 package com.example.omar_salem.mymovie;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -12,6 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.omar_salem.mymovie.data.Favorite;
+import com.example.omar_salem.mymovie.data.FavoriteDbHelper;
+import com.example.omar_salem.mymovie.model.Movie;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton.OnFavoriteChangeListener;
 
 /**
  * Created by Omar_Salem on 9/7/2017.
@@ -21,6 +29,9 @@ public class DetailActivity extends AppCompatActivity {
    private TextView MovieName,UserRating,Plotsynopsis;
    private ImageView MovieImgDetail;
    private Toolbar toolbar;
+   private FavoriteDbHelper favoriteDbHelper;
+   private Movie FavoriteMovie;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +63,31 @@ public class DetailActivity extends AppCompatActivity {
         }else {
             Toast.makeText(this,"somethings Wrong Details Can't start",Toast.LENGTH_SHORT).show();
         }
+      MaterialFavoriteButton favoriteButton=(MaterialFavoriteButton)findViewById(R.id.favorite_btn_id) ;
+      SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+      favoriteButton.setOnFavoriteChangeListener(new OnFavoriteChangeListener() {
+        @Override
+        public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+          if(favorite)
+          {
+            SharedPreferences.Editor editor=getSharedPreferences("com.example.omar_salem.mymovie",MODE_PRIVATE).edit();
+            editor.putBoolean("Add Movie",true);
+            editor.commit();
+            SaveMovies();
+            Snackbar.make(buttonView,"Added To Favorite",Snackbar.LENGTH_SHORT).show();
+
+          }else{
+            int Id =getIntent().getExtras().getInt("id");
+            favoriteDbHelper=new FavoriteDbHelper(DetailActivity.this);
+            favoriteDbHelper.DeletFromFavorite(Id);
+            SharedPreferences.Editor editor=getSharedPreferences("com.example.omar_salem.mymovie",MODE_PRIVATE).edit();
+            editor.putBoolean("Remove Movie",true);
+            editor.commit();
+            Snackbar.make(buttonView,"Removed from Favorite",Snackbar.LENGTH_SHORT).show();
+          }
+
+        }
+      });
     }
     private void initCollapsingToolbar()
     {
@@ -81,5 +117,17 @@ public class DetailActivity extends AppCompatActivity {
              }
             }
         });
+    }
+    public void SaveMovies(){
+      favoriteDbHelper= new FavoriteDbHelper(DetailActivity.this);
+      FavoriteMovie =  new Movie();
+      int IdSaved=getIntent().getExtras().getInt("id");
+      String Savedthumbil =getIntent().getExtras().getString("poster_path");
+     FavoriteMovie.setId(IdSaved);
+     FavoriteMovie.setOriginal_title(MovieName.getText().toString().trim());
+     FavoriteMovie.setOverview(Plotsynopsis.getText().toString().trim());
+     FavoriteMovie.setPosterPath(Savedthumbil);
+     FavoriteMovie.setVote_average(Double.valueOf(UserRating.getText().toString()));
+      favoriteDbHelper.AddToFavorite(FavoriteMovie);
     }
 }

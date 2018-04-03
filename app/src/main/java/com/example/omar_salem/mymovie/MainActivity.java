@@ -1,14 +1,16 @@
 package com.example.omar_salem.mymovie;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
-import android.preference.Preference;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,14 +18,16 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.omar_salem.mymovie.adapter.MoviesAdapter;
-import com.example.omar_salem.mymovie.apis.Clients;
+import com.example.omar_salem.mymovie.apis.RetrofitClient;
 import com.example.omar_salem.mymovie.apis.Loading;
+import com.example.omar_salem.mymovie.data.FavoriteDbHelper;
 import com.example.omar_salem.mymovie.model.Movie;
 import com.example.omar_salem.mymovie.model.MovieResponse;
 
@@ -34,25 +38,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements OnSharedPreferenceChangeListener {
     private RecyclerView recyclerView;
     private MoviesAdapter adapter;
     private List<Movie> MovieList;
     private ProgressDialog dialog;
-  private SwipeRefreshLayout refreshLayout;
+    private FavoriteDbHelper favoriteDbHelper;
     public static  final  String LOG_TAG=MoviesAdapter.class.getName();
-
-   // String getStringKey=getString(R.string.sorting_Poupelr);
-
-
+    private final String PopularMovies="Popular Movies";
+    private final String TopRatedMovies="TopRated Movies";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Views();
+        SetupViews();
 
     }
-    private void Views()
+    private void SetupViews()
     {
         dialog=new ProgressDialog(this);
         dialog.setMessage("Loading....");
@@ -63,18 +65,41 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         adapter=new MoviesAdapter(this,MovieList);
         if(getActivity().getResources().getConfiguration().orientation== Configuration.ORIENTATION_PORTRAIT)//this if  layout in oriantation or landskaep
         {
-        recyclerView.setLayoutManager(new GridLayoutManager(this,2));}
+        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        }
         else{
-            recyclerView.setLayoutManager(new GridLayoutManager(this,4));}
+            recyclerView.setLayoutManager(new GridLayoutManager(this,4));
+        }
+
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-       // LoadFromService();
-        CheckSorted();
+        LoadMovies(PopularMovies);
+
 
     }
 
-    public Activity getActivity()
+  private void SetupFavorite(){
+    recyclerView=(RecyclerView)findViewById(R.id.res_id);
+    MovieList=new ArrayList<>();
+    adapter=new MoviesAdapter(this,MovieList);
+    if(getActivity().getResources().getConfiguration().orientation== Configuration.ORIENTATION_PORTRAIT)//this if  layout in oriantation or landskaep
+    {
+      recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+    }
+    else{
+      recyclerView.setLayoutManager(new GridLayoutManager(this,4));
+    }
+    recyclerView.setItemAnimator(new DefaultItemAnimator());
+    recyclerView.setAdapter(adapter);
+    adapter.notifyDataSetChanged();
+    favoriteDbHelper =new FavoriteDbHelper(this);
+    getAllFavoritFromDB();
+
+  }
+
+
+  public Activity getActivity()
     {
         Context context=this;
         while(context instanceof ContextWrapper){
@@ -86,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         return null;
     }
-   private void  LoadFromService(){
+   private void  LoadMovies( String check){
 
        try {
            if(BuildConfig.theMovieApi.isEmpty())
@@ -97,8 +122,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
            }
 
 
-           Clients clients=new Clients();
+           RetrofitClient clients=new RetrofitClient();
            Loading apploading=clients.getClint().create(Loading.class);
+           //Fetch PopularMovies from api
+          if(check.equals(PopularMovies))
+          {
            Call<MovieResponse> call=apploading.getpopularMovies(BuildConfig.theMovieApi);
            call.enqueue(new Callback<MovieResponse>() {
                @Override
@@ -106,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                    List <Movie> movies= response.body().getResults();
                    recyclerView.setAdapter(new MoviesAdapter(getApplicationContext(),movies));
                    recyclerView.smoothScrollToPosition(0);
-
                    dialog.dismiss();
                }
 
@@ -118,7 +145,30 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
                }
-           });
+           });}
+           else //Fetch Toprated Movies from api
+             {
+            Call<MovieResponse> call=apploading.getTopMovies(BuildConfig.theMovieApi);
+            call.enqueue(new Callback<MovieResponse>() {
+              @Override
+              public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                List <Movie> movies= response.body().getResults();
+                recyclerView.setAdapter(new MoviesAdapter(getApplicationContext(),movies));
+                recyclerView.smoothScrollToPosition(0);
+
+                dialog.dismiss();
+              }
+
+              @Override
+              public void onFailure(Call<MovieResponse> call, Throwable t) {
+                Log.d("Error ",t.getMessage());
+                dialog.dismiss();
+                Toast.makeText(MainActivity.this,"Error to Get Data ",Toast.LENGTH_SHORT).show();
+
+
+              }
+            });
+          }
        }catch (Exception e){
            Log.d("Error in Try Block",e.getMessage());
            Toast.makeText(MainActivity.this,"Error in try block",Toast.LENGTH_SHORT).show();
@@ -126,46 +176,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
    }
-    private void  LoadFromService2(){
 
-        try {
-            if(BuildConfig.theMovieApi.isEmpty())
-            {
-                Toast.makeText(getApplicationContext(),"Check Your APi ",Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                return;
-            }
-
-
-            Clients clients=new Clients();
-            Loading apploading=clients.getClint().create(Loading.class);
-            Call<MovieResponse> call=apploading.getTopMovies(BuildConfig.theMovieApi);
-            call.enqueue(new Callback<MovieResponse>() {
-                @Override
-                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                    List <Movie> movies= response.body().getResults();
-                    recyclerView.setAdapter(new MoviesAdapter(getApplicationContext(),movies));
-                    recyclerView.smoothScrollToPosition(0);
-
-                    dialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(Call<MovieResponse> call, Throwable t) {
-                    Log.d("Error ",t.getMessage());
-                    dialog.dismiss();
-                    Toast.makeText(MainActivity.this,"Error to Get Data ",Toast.LENGTH_SHORT).show();
-
-
-                }
-            });
-        }catch (Exception e){
-            Log.d("Error in Try Block",e.getMessage());
-            Toast.makeText(MainActivity.this,"Error in try block",Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,49 +188,46 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+      if (getActionBar() != null) {
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+      }
         switch (item.getItemId())
         {
-            case R.id.menu_settings:
-                Intent i = new Intent(this,Sittings.class);
-                startActivity(i);
+            case R.id.action_popular:
+               LoadMovies(PopularMovies);
+
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_top:
+                LoadMovies(TopRatedMovies);
+                break;
+          case R.id.action_favorite:
+            SetupFavorite();
+            break;
 
         }
-
-    }
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-Log.d(LOG_TAG,"prefrence Updated ");
-        CheckSorted();
-    }
-    private void  CheckSorted ()
-    {
-        SharedPreferences Preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String Sort=Preferences.getString(
-                this.getString(R.string.sorting_key),
-                this.getString(R.string.sorting_Poupelr)
-        );
-        if(Sort.equals(this.getString(R.string.sorting_Poupelr)))
-        {
-            Log.d(LOG_TAG,"Sorting by Poupelar ");
-            LoadFromService();
-        }
-        else {Log.d(LOG_TAG,"Sorting by Rating");
-            LoadFromService2();}
+        return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(MovieList.isEmpty())
-        {
-            CheckSorted();
-        }
-        else
-        {
+  private void getAllFavoritFromDB() {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... voids) {
+        MovieList.clear();
+        MovieList.addAll(favoriteDbHelper.getAll());
+        return null;
+      }
 
-        }
-    }
+      @Override
+      protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        adapter.notifyDataSetChanged();
+      }
+    }.execute();
+  }
+
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+  }
 }

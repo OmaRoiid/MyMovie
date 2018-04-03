@@ -53,6 +53,10 @@ public class Movie {
         this.vote_count = vote_count;
     }
 
+    public Movie() {
+
+    }
+
     public String getPosterPath() {
         return "https://image.tmdb.org/t/p/w500"+ posterPath;
     }

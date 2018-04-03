@@ -9,4 +9,5 @@
     <string name="sorting_key">sorting order</string>
     <string name="sorting_Poupelr"> Poupeler Movies</string>
     <string name="sorting_Reated">High Rat </string>
+  <string name="movie_over_view">OverView</string>
 </resources>
