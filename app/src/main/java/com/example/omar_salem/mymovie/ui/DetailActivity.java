@@ -1,4 +1,4 @@
-package com.example.omar_salem.mymovie;
+package com.example.omar_salem.mymovie.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,15 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.omar_salem.mymovie.data.Favorite;
+import com.example.omar_salem.mymovie.R;
 import com.example.omar_salem.mymovie.data.FavoriteDbHelper;
 import com.example.omar_salem.mymovie.model.Movie;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton.OnFavoriteChangeListener;
 
-/**
- * Created by Omar_Salem on 9/7/2017.
- */
+
 
 public class DetailActivity extends AppCompatActivity {
    private TextView MovieName,UserRating,Plotsynopsis;

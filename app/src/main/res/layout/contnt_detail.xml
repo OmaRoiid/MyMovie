@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/ViewPage"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.omar_salem.mymovie.DetailActivity"
+    tools:context="com.example.omar_salem.mymovie.ui.DetailActivity"
     tools:showIn="@layout/activety_detail"
 
     >
@@ -102,18 +102,7 @@
             android:textSize="20sp"
             android:layout_below="@+id/rating"
             />
-        <TextView
-          android:id="@+id/reles_date"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="@dimen/Layout_margin_left"
-          android:text="Relese date "
-          android:textAlignment="center"
-          android:layout_marginTop="10dp"
-          android:textStyle="bold"
-          android:textSize="20sp"
 
-          />
 
 
 

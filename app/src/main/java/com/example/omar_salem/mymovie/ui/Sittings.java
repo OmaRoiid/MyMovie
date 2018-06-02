@@ -1,10 +1,11 @@
-package com.example.omar_salem.mymovie;
+package com.example.omar_salem.mymovie.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
+import com.example.omar_salem.mymovie.R;
 
 /**
  * Created by Omar_Salem on 9/7/2017.

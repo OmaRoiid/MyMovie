@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/White"
-    tools:context="com.example.omar_salem.mymovie.MainActivity">
+    tools:context="com.example.omar_salem.mymovie.ui.MainActivity">
 
     <include layout="@layout/contnt_main"/>
 </android.support.v4.widget.SwipeRefreshLayout>

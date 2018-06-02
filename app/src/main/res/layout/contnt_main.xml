@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/ViewPage"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.omar_salem.mymovie.MainActivity"
+    tools:context="com.example.omar_salem.mymovie.ui.MainActivity"
     tools:showIn="@layout/activity_main "
     android:layout_marginTop="@dimen/activity_vertical_margin">
     <android.support.v7.widget.RecyclerView
